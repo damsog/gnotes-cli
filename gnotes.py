@@ -1,4 +1,25 @@
 import argparse
+import requests
+from utils.logger import Logger
+
+class RequestHandler:
+    def __init__(self, server_url, server_port, level="INFO") -> None:
+        if level=="DEBUG":
+            self.logger = Logger("DEBUG", COLORED=True)
+        else:
+            self.logger = Logger("INFO", COLORED=True)
+
+        self.server_url = server_url
+        self.server_port = server_port
+
+        self.api_name = "/api"
+    
+    def login(self):
+        login_endpoint = "/access/login"
+        self.logger.info("Login to the platform...")
+        user = input("username: ")
+        password = input("password: ")
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -34,7 +55,15 @@ def main() -> None:
                                                             Usage: <attachment> or <attachment>=><value> or <attachment>=>[<value>,<value>,..] \
                                                             chain multiple options using '|'  ")
     ap.add_argument("-i", "--information", required=False, help="Extra information about the object")
+    ap.add_argument("-v", "--verbose", action="store_true", help="Debug level for logger output")
     args = vars(ap.parse_args())
+
+    if args['verbose']:
+        logger = Logger("DEBUG", COLORED=True)
+    else:
+        logger = Logger("INFO", COLORED=True)
+
+    logger.info(" Printing Test")
 
 if __name__ == "__main__":
     main()
