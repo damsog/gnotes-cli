@@ -13,7 +13,7 @@ class Logger:
             self.TAG_MODULE = ''
 
         self.logger = logging.getLogger(__name__)
-        self.logger_format = '%(asctime)s  : : %(levelname)s : : %(message)s'
+        self.logger_format = '%(message)s'
         self.logger_date_format = '[%Y/%m/%d %H:%M:%S %Z]'
 
         if LEVEL == "DEBUG":
