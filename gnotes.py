@@ -3,8 +3,56 @@ import requests
 from utils.logger import Logger
 import configparser
 
+class APIServerEndpoints:
+    def __init__(self)-> None:
+        self.api_base = "/api" 
+        
+        # Access endpoints
+        self.api_base_access = "/access"
+        self.login = f'{self.api_base_access}/login'
+        self.create = f'{self.api_base_access}/create'
+
+        # User endpoints
+        self.api_base_user = "/user"
+        self.api_user_getAll = f'{self.api_base_user}/getAll'
+        self.api_user_getById = f'{self.api_base_user}/getById/:id'
+        self.api_user_getByUsername = f'{self.api_base_user}/getByUsername/:username'
+        self.api_user_getByEmail = f'{self.api_base_user}/getByEmail/:email'
+        self.api_user_update = f'{self.api_base_user}/update/:id'
+        self.api_user_delete = f'{self.api_base_user}/delete/:id'
+
+        # List endpoints
+        self.api_base_list = "/list"
+        self.api_list_create = f'{self.api_base_list}/create'
+        self.api_list_getAll = f'{self.api_base_list}/getAll'
+        self.api_list_getByUserId = f'{self.api_base_list}/getByUserId/:id'
+        self.api_list_get = f'{self.api_base_list}/get/:id'
+        self.api_list_getByName = f'{self.api_base_list}/getByName/:name'
+        self.api_list_update = f'{self.api_base_list}/update/:id'
+        self.api_list_delete = f'{self.api_base_list}/delete/:id'
+
+
+        # Object endpoints
+        self.api_base_object = "/object"
+        self.api_object_create = f'{self.api_base_object}/create'
+        self.api_object_createByListName = f'{self.api_base_object}/createByListName'
+        self.api_object_getAll = f'{self.api_base_object}/getAll'
+        self.api_object_getByListId = f'{self.api_base_object}/getByListId/:id'
+        self.api_object_getByListName = f'{self.api_base_object}/getByListName/:name'
+        self.api_object_getByFilters = f'{self.api_base_object}/getByFilters/:listName'
+        self.api_object_get = f'{self.api_base_object}/get/:id'
+        self.api_object_getByName = f'{self.api_base_object}/getByName/:objectName/:listName'
+        self.api_object_update = f'{self.api_base_object}/update/:id'
+        self.api_object_updateByName = f'{self.api_base_object}/updateByName/:objectName/:listName'
+        self.api_object_updateOptions = f'{self.api_base_object}/updateOptions/:id'
+        self.api_object_updateOptionsByName = f'{self.api_base_object}/updateOptionsByName/:objectName/:listName'
+        self.api_object_removeOptions  = f'{self.api_base_object}/removeOptions/:id' 
+        self.api_object_removeOptionsByName = f'{self.api_base_object}/removeOptionsByName/:objectName/:listName'
+        self.api_object_delete = f'{self.api_base_object}/delete/:id'
+        self.api_object_deleteByName = f'{self.api_base_object}/deleteByName/:objectName/:listName'
+
 class RequestHandler:
-    def __init__(self, server_url, server_port, level="INFO") -> None:
+    def __init__(self, server_url, server_port, endpoints, level="INFO") -> None:
         if level=="DEBUG":
             self.logger = Logger("DEBUG", COLORED=True)
         else:
@@ -16,11 +64,9 @@ class RequestHandler:
         self.api_name = "/api"
     
     def login(self):
-        login_endpoint = "/access/login"
         self.logger.info("Login to the platform...")
         user = input("username: ")
         password = input("password: ")
-
 
 def main() -> None:
     ap = argparse.ArgumentParser()
