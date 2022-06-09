@@ -1,6 +1,7 @@
 import argparse
 import requests
 from utils.logger import Logger
+import configparser
 
 class RequestHandler:
     def __init__(self, server_url, server_port, level="INFO") -> None:
@@ -57,13 +58,15 @@ def main() -> None:
     ap.add_argument("-i", "--information", required=False, help="Extra information about the object")
     ap.add_argument("-v", "--verbose", action="store_true", help="Debug level for logger output")
     args = vars(ap.parse_args())
+    config = configparser.ConfigParser()
+    config.read('config/config.init')
 
     if args['verbose']:
         logger = Logger("DEBUG", COLORED=True)
     else:
         logger = Logger("INFO", COLORED=True)
 
-    logger.info(" Printing Test")
+    logger.info(f' Basic Configuration {config["DEFAULT"]["SERVER"]}')
 
 if __name__ == "__main__":
     main()
