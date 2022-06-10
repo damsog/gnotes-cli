@@ -1,6 +1,7 @@
 import argparse
 import requests
 from utils.logger import Logger
+from utils.authenticator import Authenticator
 import configparser
 
 class APIServerEndpoints:
@@ -58,15 +59,53 @@ class RequestHandler:
         else:
             self.logger = Logger("INFO", COLORED=True)
 
+        # API
         self.server_url = server_url
         self.server_port = server_port
-
         self.api_name = "/api"
+
+        # Configuration
+        self.config = configparser.ConfigParser()
+        self.config.read('config/config.init')
+        self.authenticator = Authenticator()
+
+        # List
+        self.list_active = False
+        self.current_list = None
     
     def login(self):
         self.logger.info("Login to the platform...")
         user = input("username: ")
         password = input("password: ")
+
+    def create(self):
+        pass
+
+    def modify(self):
+        pass
+
+    def delete(self):
+        pass
+
+    def set(self):
+        pass
+
+    def unset(self):
+        pass
+    
+    def add(self):
+        pass
+
+    def update(self):
+        pass
+
+    def remove(self):
+        pass
+
+    def get(self):
+        pass
+
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -104,15 +143,11 @@ def main() -> None:
     ap.add_argument("-i", "--information", required=False, help="Extra information about the object")
     ap.add_argument("-v", "--verbose", action="store_true", help="Debug level for logger output")
     args = vars(ap.parse_args())
-    config = configparser.ConfigParser()
-    config.read('config/config.init')
 
     if args['verbose']:
         logger = Logger("DEBUG", COLORED=True)
     else:
         logger = Logger("INFO", COLORED=True)
-
-    logger.info(f' Basic Configuration {config["DEFAULT"]["SERVER"]}')
 
 if __name__ == "__main__":
     main()

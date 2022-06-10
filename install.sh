@@ -6,4 +6,5 @@ source gnotes_venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install requests
 python3 -m pip install python-dotenv
+python3 -m pip install colorful
 python3 -m pip install configparser
