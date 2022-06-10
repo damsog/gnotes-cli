@@ -9,12 +9,12 @@ class APIServerEndpoints:
         self.api_base = "/api" 
         
         # Access endpoints
-        self.api_base_access = "/access"
+        self.api_base_access = f'{self.api_base}/access'
         self.login = f'{self.api_base_access}/login'
         self.create = f'{self.api_base_access}/create'
 
         # User endpoints
-        self.api_base_user = "/user"
+        self.api_base_user = f'{self.api_base}/user'
         self.api_user_getAll = f'{self.api_base_user}/getAll'
         self.api_user_getById = f'{self.api_base_user}/getById/:id'
         self.api_user_getByUsername = f'{self.api_base_user}/getByUsername/:username'
@@ -23,7 +23,7 @@ class APIServerEndpoints:
         self.api_user_delete = f'{self.api_base_user}/delete/:id'
 
         # List endpoints
-        self.api_base_list = "/list"
+        self.api_base_list = f'{self.api_base}/list'
         self.api_list_create = f'{self.api_base_list}/create'
         self.api_list_getAll = f'{self.api_base_list}/getAll'
         self.api_list_getByUserId = f'{self.api_base_list}/getByUserId/:id'
@@ -34,7 +34,7 @@ class APIServerEndpoints:
 
 
         # Object endpoints
-        self.api_base_object = "/object"
+        self.api_base_object = f'{self.api_base}/object'
         self.api_object_create = f'{self.api_base_object}/create'
         self.api_object_createByListName = f'{self.api_base_object}/createByListName'
         self.api_object_getAll = f'{self.api_base_object}/getAll'
@@ -62,7 +62,7 @@ class RequestHandler:
         # API
         self.server_url = server_url
         self.server_port = server_port
-        self.api_name = "/api"
+        self.endpoints = APIServerEndpoints()
 
         # Configuration
         self.config = configparser.ConfigParser()
