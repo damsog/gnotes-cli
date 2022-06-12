@@ -3,6 +3,7 @@ from utils.logger import Logger
 import configparser
 import argparse
 import requests
+import sys
 
 class APIServerEndpoints:
     def __init__(self, server_url=None, server_port=None)-> None:
@@ -18,7 +19,7 @@ class APIServerEndpoints:
         self.api_create = f'{self.api_base_access}/create'
 
         # User endpoints
-        self.api_base_user = f'{self.api_base}/user'
+        self.api_base_user = f'{self.api_base}/users'
         self.api_user_getAll = f'{self.api_base_user}/getAll'
         self.api_user_getById = f'{self.api_base_user}/getById/:id'
         self.api_user_getByUsername = f'{self.api_base_user}/getByUsername/:username'
@@ -27,7 +28,7 @@ class APIServerEndpoints:
         self.api_user_delete = f'{self.api_base_user}/delete/:id'
 
         # List endpoints
-        self.api_base_list = f'{self.api_base}/list'
+        self.api_base_list = f'{self.api_base}/lists'
         self.api_list_create = f'{self.api_base_list}/create'
         self.api_list_getAll = f'{self.api_base_list}/getAll'
         self.api_list_getByUserId = f'{self.api_base_list}/getByUserId/:id'
@@ -38,7 +39,7 @@ class APIServerEndpoints:
 
 
         # Object endpoints
-        self.api_base_object = f'{self.api_base}/object'
+        self.api_base_object = f'{self.api_base}/objects'
         self.api_object_create = f'{self.api_base_object}/create'
         self.api_object_createByListName = f'{self.api_base_object}/createByListName'
         self.api_object_getAll = f'{self.api_base_object}/getAll'
@@ -119,13 +120,23 @@ class RequestHandler:
     def remove(self):
         pass
 
-    def get(self):
-        if self.authenticator.is_authenticated:
-            pass
-        else:
-            self.login()
+    def get(self, list, name=None, filter=None):
+        if not self.authenticator.is_authenticated: self.login()
+        if not self.authenticator.is_authenticated: sys.exit(1)
+    
+        if not list: self.logger.error(f'Must specify the list')
 
+        if(list=="lists" and not name):
+            if(filter): self.logger.warning("Filters dont apply to the set of lists themselves. ignoring option")
+            
+            url = self.endpoints.api_list_getByUserId.replace(':id', self.authenticator.session['user_id'])
 
+            headers = {'content-type': 'application/json',
+                       'Authorization': self.authenticator.session['token'] }
+
+            request_result = requests.request("GET", url=url, headers=headers)
+            
+            self.logger.info(request_result.text)
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -171,7 +182,35 @@ def main() -> None:
 
     requests_handler = RequestHandler()
 
-    requests_handler.login()
+    if args["command"] =="create":
+        pass
+
+    if args["command"] =="modify":
+        pass
+
+    if args["command"] =="delete":
+        pass
+
+    if args["command"] =="set":
+        pass
+
+    if args["command"] =="unset":
+        pass
+
+    if args["command"] =="add":
+        pass
+
+    if args["command"] =="update":
+        pass
+
+    if args["command"] =="remove":
+        pass
+
+    if args["command"] =="get":
+        pass
+
+    if args['command'] == 'get':
+        requests_handler.get(args['list'], args['name'], args["filters"])
 
 if __name__ == "__main__":
     main()
