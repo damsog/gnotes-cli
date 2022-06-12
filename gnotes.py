@@ -1,17 +1,21 @@
+from utils.authenticator import Authenticator
+from utils.logger import Logger
+import configparser
 import argparse
 import requests
-from utils.logger import Logger
-from utils.authenticator import Authenticator
-import configparser
 
 class APIServerEndpoints:
-    def __init__(self)-> None:
-        self.api_base = "/api" 
+    def __init__(self, server_url=None, server_port=None)-> None:
+
+        if (server_url and server_port):
+            self.api_base = f'http://{server_url}:{server_port}/api'
+        else:
+            self.api_base = "/api" 
         
         # Access endpoints
         self.api_base_access = f'{self.api_base}/access'
-        self.login = f'{self.api_base_access}/login'
-        self.create = f'{self.api_base_access}/create'
+        self.api_login = f'{self.api_base_access}/login'
+        self.api_create = f'{self.api_base_access}/create'
 
         # User endpoints
         self.api_base_user = f'{self.api_base}/user'
@@ -53,31 +57,44 @@ class APIServerEndpoints:
         self.api_object_deleteByName = f'{self.api_base_object}/deleteByName/:objectName/:listName'
 
 class RequestHandler:
-    def __init__(self, server_url, server_port, endpoints, level="INFO") -> None:
+    def __init__(self, level="INFO") -> None:
         if level=="DEBUG":
             self.logger = Logger("DEBUG", COLORED=True)
         else:
             self.logger = Logger("INFO", COLORED=True)
 
-        # API
-        self.server_url = server_url
-        self.server_port = server_port
-        self.endpoints = APIServerEndpoints()
-
         # Configuration
         self.config = configparser.ConfigParser()
         self.config.read('config/config.init')
-        self.authenticator = Authenticator()
+
+        # API
+        self.server_url = self.config['DEFAULT']['SERVER']
+        self.server_port = self.config['DEFAULT']['PORT']
+        self.endpoints = APIServerEndpoints(self.server_url, self.server_port)
+
+        self.authenticator = Authenticator(self.endpoints.api_login)
 
         # List
         self.list_active = False
         self.current_list = None
     
     def login(self):
-        self.logger.info("Login to the platform...")
-        user = input("username: ")
-        password = input("password: ")
+        tries_remaining = 3
+        while(tries_remaining > 0):
+            tries_remaining -= 1
+            self.logger.info("Login to the platform...")
+            user = input("username: ")
+            password = input("password: ")
+            try:
+                result = self.authenticator.authenticate(user, password)
+                if result['result'] == 'success':
+                    break
+                elif result['result'] == 'failed':
+                    self.logger.info(f'Login Failed : {result["message"]}')
 
+            except Exception as e:
+                self.logger.error(e)
+            
     def create(self):
         pass
 
@@ -103,7 +120,10 @@ class RequestHandler:
         pass
 
     def get(self):
-        pass
+        if self.authenticator.is_authenticated:
+            pass
+        else:
+            self.login()
 
 
 
@@ -148,6 +168,10 @@ def main() -> None:
         logger = Logger("DEBUG", COLORED=True)
     else:
         logger = Logger("INFO", COLORED=True)
+
+    requests_handler = RequestHandler()
+
+    requests_handler.login()
 
 if __name__ == "__main__":
     main()
