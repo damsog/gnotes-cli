@@ -9,10 +9,13 @@ class Authenticator:
             credentials = { 'username': username, 'password': password }
             authentication = requests.post(self.url, credentials)
 
-            self.token = json.loads(authentication.text).data.token
+            result = json.loads(authentication.text)
+            self.token = result['data']['token']
+            self.user_id = result['data']['_id']
             self.is_authenticated = True
         else:
             self.is_authenticated = False
+            self.user_id = None
             self.token = None
     
     def authenticate(self, username, password):
@@ -21,11 +24,9 @@ class Authenticator:
 
         result = json.loads(authentication.text)
 
-        if result=='success':
+        if result['result']=='success':
             self.token = result['data']['token']
+            self.user_id = result['data']['_id']
             self.is_authenticated = True
         
         return result
-
-    def get_token(self):
-        return self.token
