@@ -1,3 +1,4 @@
+import json
 from utils.authenticator import Authenticator
 from utils.logger import Logger
 import configparser
@@ -96,8 +97,22 @@ class RequestHandler:
             except Exception as e:
                 self.logger.error(e)
             
-    def create(self):
-        pass
+    def create(self, name, description=None):
+        if not self.authenticator.is_authenticated: self.login()
+        if not self.authenticator.is_authenticated: sys.exit(1)
+
+        if not name: self.logger.error(f'Must specify the list name')
+        
+        url = self.endpoints.api_list_create
+
+        headers = {'content-type': 'application/json',
+                    'Authorization': self.authenticator.session['token'] }
+        
+        payload = json.dumps({ 'name':name,'description': description})
+
+        request_result = requests.request("POST", url=url, headers=headers, data=payload)
+        
+        self.logger.info(request_result.text)
 
     def modify(self):
         pass
@@ -135,8 +150,14 @@ class RequestHandler:
                        'Authorization': self.authenticator.session['token'] }
 
             request_result = requests.request("GET", url=url, headers=headers)
-            
-            self.logger.info(request_result.text)
+            if request_result.text == "Invalid Token":
+                self.authenticator.clean_session()
+                self.get(list, name, filter)
+            else:
+                data = json.loads(request_result.text)
+                self.logger.info("   User Lists:")
+                for object in data['data']:
+                    self.logger.info(f'      {object["name"]} ')
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -183,7 +204,7 @@ def main() -> None:
     requests_handler = RequestHandler()
 
     if args["command"] =="create":
-        pass
+        requests_handler.create(args["name"], args["description"])
 
     if args["command"] =="modify":
         pass
