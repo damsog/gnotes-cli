@@ -23,7 +23,7 @@ class Logger:
     
     def info(self, message):
         if self.COLORED:
-            self.logger.info( colorful.purple(f'{self.TAG_MODULE}: {message}') )
+            self.logger.info( colorful.purple(f'{self.TAG_MODULE} {message}') )
         else:
             self.logger.info(f'{self.TAG_MODULE}: {message}')
     
