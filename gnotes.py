@@ -103,16 +103,23 @@ class RequestHandler:
 
         if not name: self.logger.error(f'Must specify the list name')
         
+        # Preparing the request
         url = self.endpoints.api_list_create
-
         headers = {'content-type': 'application/json',
-                    'Authorization': self.authenticator.session['token'] }
-        
+                    'Authorization': self.authenticator.session['token'] }        
         payload = json.dumps({ 'name':name,'description': description})
 
         request_result = requests.request("POST", url=url, headers=headers, data=payload)
-        
-        self.logger.info(request_result.text)
+
+
+        # Handlng the request
+        request_result = json.loads(request_result.text)
+
+        if request_result['result']=="success":
+            self.logger.info("   List Created:")
+            self.logger.info(f'      {request_result["data"]["newList"]["name"]} {request_result["data"]["newList"]["description"]}')
+        else:
+            self.logger.error(f'   {request_result["message"]}')
 
     def modify(self):
         pass
