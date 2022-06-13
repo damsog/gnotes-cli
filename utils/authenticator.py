@@ -1,3 +1,4 @@
+import os
 from os.path import exists
 import requests
 import pickle
@@ -41,6 +42,14 @@ class Authenticator:
         with open("session.pickle", "wb") as session_to_save:
             pickle.dump(self.session, session_to_save)
     
+    def clean_session(self):
+        self.session = {'user_id':None,'token':None}
+        self.is_authenticated = False
+        try:
+            os.remove('session.pickle')
+        except Exception as e:
+            pass
+        
     def authenticate(self, username, password):
         credentials = { 'username': username, 'password': password }
         authentication = requests.post(self.url, credentials)
