@@ -98,10 +98,13 @@ class RequestHandler:
                 self.logger.error(e)
             
     def create(self, name, description=None):
-        if not self.authenticator.is_authenticated: self.login()
-        if not self.authenticator.is_authenticated: sys.exit(1)
-
-        if not name: self.logger.error(f'Must specify the list name')
+        if not self.authenticator.is_authenticated: 
+            self.login()
+            if not self.authenticator.is_authenticated: return
+    
+        if not name: 
+            self.logger.error(f'Must specify the list name')
+            return
         
         # Preparing the request
         url = self.endpoints.api_list_create
@@ -121,7 +124,7 @@ class RequestHandler:
         else:
             self.logger.error(f'   {request_result["message"]}')
 
-    def modify(self):
+    def modify(self, name, description=None):
         pass
 
     def delete(self):
@@ -133,8 +136,19 @@ class RequestHandler:
     def unset(self):
         pass
     
-    def add(self):
-        pass
+    def add(self, name, list, description=None, filter=None, attachments=None, information=None):
+        if not self.authenticator.is_authenticated: 
+            self.login()
+            if not self.authenticator.is_authenticated: return
+
+        if not name: 
+            self.logger.error(f'Must specify the object name')
+            return
+
+        if not list: 
+            self.logger.error(f'Must specify the list')
+            return
+        
 
     def update(self):
         pass
@@ -143,10 +157,13 @@ class RequestHandler:
         pass
 
     def get(self, list, name=None, filter=None):
-        if not self.authenticator.is_authenticated: self.login()
-        if not self.authenticator.is_authenticated: sys.exit(1)
+        if not self.authenticator.is_authenticated: 
+            self.login()
+            if not self.authenticator.is_authenticated: return
     
-        if not list: self.logger.error(f'Must specify the list')
+        if not list: 
+            self.logger.error(f'Must specify the list')
+            return
 
         if(list=="lists" and not name):
             if(filter): self.logger.warning("Filters dont apply to the set of lists themselves. ignoring option")
@@ -164,7 +181,7 @@ class RequestHandler:
                 data = json.loads(request_result.text)
                 self.logger.info("   User Lists:")
                 for object in data['data']:
-                    self.logger.info(f'      {object["name"]} ')
+                    self.logger.info(f'      {object["name"]} {object["description"]}')
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -226,7 +243,7 @@ def main() -> None:
         pass
 
     if args["command"] =="add":
-        pass
+        requests_handler.add( args["name"], args["list"], args["description"], args["filters"], args["attachments"], args["information"])
 
     if args["command"] =="update":
         pass
