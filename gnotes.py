@@ -1,10 +1,10 @@
-import json
 from utils.authenticator import Authenticator
 from utils.logger import Logger
+from getpass import getpass
 import configparser
 import argparse
 import requests
-import sys
+import json
 
 class APIServerEndpoints:
     def __init__(self, server_url=None, server_port=None)-> None:
@@ -86,7 +86,7 @@ class RequestHandler:
             tries_remaining -= 1
             self.logger.info("Login to the platform...")
             user = input("username: ")
-            password = input("password: ")
+            password = getpass("password: ")
             try:
                 result = self.authenticator.authenticate(user, password)
                 if result['result'] == 'success':
@@ -182,6 +182,9 @@ class RequestHandler:
                 self.logger.info("   User Lists:")
                 for object in data['data']:
                     self.logger.info(f'      {object["name"]} {object["description"]}')
+    
+    def logout(self):
+        self.authenticator.clean_session()
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -194,7 +197,8 @@ def main() -> None:
         "add",
         "update",
         "remove",
-        "get"], help="S.")
+        "get",
+        "logout"], help="S.")
     ap.add_argument("-n", "--name", required=False, help="Element name")
     ap.add_argument("-d", "--description", required=False, help="Element description. This option Substitutes previous description.")
     ap.add_argument("-l", "--list", required=False, help="List name.")
@@ -256,6 +260,9 @@ def main() -> None:
 
     if args['command'] == 'get':
         requests_handler.get(args['list'], args['name'], args["filters"])
+    
+    if args['command'] == 'logout':
+        requests_handler.logout()
 
 if __name__ == "__main__":
     main()
