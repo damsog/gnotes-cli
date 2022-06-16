@@ -1,6 +1,7 @@
 import logging
 import colorful
 
+
 # My logger configuration
 class Logger:
     def __init__(self, LEVEL, COLORED=False, TAG_MODULE=None):
@@ -15,32 +16,49 @@ class Logger:
         self.logger = logging.getLogger(__name__)
         self.logger_format = '%(message)s'
         self.logger_date_format = '[%Y/%m/%d %H:%M:%S %Z]'
+        colorful.use_style('solarized')
 
         if LEVEL == "DEBUG":
             logging.basicConfig(level=logging.DEBUG, format=self.logger_format, datefmt=self.logger_date_format)
         else:
             logging.basicConfig(level=logging.INFO,  format=self.logger_format, datefmt=self.logger_date_format)
     
-    def info(self, message):
+    def color(self, message, color="no"):
+
+        colorize = {
+            'yellow':colorful.yellow(message),
+            'orange':colorful.orange(message),
+            'red':colorful.red(message), 
+            'magenta':colorful.magenta(message),
+            'violet':colorful.violet(message), 
+            'blue':colorful.blue(message),
+            'cyan':colorful.cyan(message),
+            'green':colorful.green(message),
+            'no':message
+        }
+
+        return colorize.get(color, 'Not a valid color')
+
+    def info(self, message, color="no"):
         if self.COLORED:
-            self.logger.info( colorful.purple(f'{self.TAG_MODULE} {message}') )
+            self.logger.info( self.color(f'{self.TAG_MODULE} {message}', color) )
         else:
             self.logger.info(f'{self.TAG_MODULE}: {message}')
     
-    def debug(self, message):
+    def debug(self, message, color="no"):
         if self.COLORED:
-            self.logger.debug( colorful.purple(f'{self.TAG_MODULE}: {message}') )
+            self.logger.debug( self.color(f'{self.TAG_MODULE}: {message}', color) )
         else:
             self.logger.debug(f'{self.TAG_MODULE}: {message}')
 
-    def warning(self, message):
+    def warning(self, message, color="no"):
         if self.COLORED:
-            self.logger.warning( colorful.purple(f'{self.TAG_MODULE}: {message}') )
+            self.logger.warning( self.color(f'{self.TAG_MODULE}: {message}', color) )
         else:
             self.logger.warning(f'{self.TAG_MODULE}: {message}')
     
-    def error(self, message):
+    def error(self, message, color="no"):
         if self.COLORED:
-            self.logger.error( colorful.purple(f'{self.TAG_MODULE}: {message}') )
+            self.logger.error( self.color(f'{self.TAG_MODULE}: {message}', color) )
         else:
             self.logger.error(f'{self.TAG_MODULE}: {message}')
