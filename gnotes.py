@@ -55,7 +55,7 @@ def main() -> None:
         requests_handler.modify(args["name"], args["description"])
 
     if args["command"] =="delete":
-        pass
+        requests_handler.delete(args["name"])
 
     if args["command"] =="set":
         pass
