@@ -129,18 +129,42 @@ class RequestHandler:
     def unset(self):
         pass
     
-    def add(self, name, list, description=None, filter=None, attachments=None, information=None):
+    def add(self, **kwargs):
         if not self.authenticator.is_authenticated: 
             self.login()
             if not self.authenticator.is_authenticated: return
 
-        if not name: 
-            self.logger.error(f'Must specify the object name')
-            return
+        payload = {}
+        for arg,val in kwargs.items():
+            if( arg=='name' and val==None) or (arg=='list' and val==None): 
+                self.logger.error(f'Must specify the {arg}')
+                return
+            
+            payload[arg]= val if val else ""
+        
+        # Preparing the request
+        url = self.endpoints.api_object_createByListName
+        headers = {'content-type': 'application/json',
+                    'Authorization': self.authenticator.session['token'] }
 
-        if not list: 
-            self.logger.error(f'Must specify the list')
-            return
+        payload = json.dumps(payload)
+
+        request_result = requests.request("POST", url=url, headers=headers, data=payload)
+
+        # Handlng the response
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.add(payload)
+        else:
+            print(request_result.text)
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                self.logger.info("   Object Added:")
+                self.logger.info(f'      {request_result["data"]["name"]} {request_result["data"]["description"]}')
+            else:
+                self.logger.error(f'   {request_result["message"]}')
+            
+            
         
 
     def update(self):
