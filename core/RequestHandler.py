@@ -198,6 +198,22 @@ class RequestHandler:
                 self.logger.info("   User Lists:")
                 for object in data['data']:
                     self.logger.info(f'      {object["name"]} {object["description"]}')
+
+        # Preparing the request     
+        url = self.endpoints.api_object_getByListName.replace(':name', list)
+
+        headers = {'content-type': 'application/json',
+                    'Authorization': self.authenticator.session['token'] }
+
+        request_result = requests.request("GET", url=url, headers=headers)
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.get(list, name, filter)
+        else:
+            data = json.loads(request_result.text)
+            self.logger.info("   User Lists:")
+            for object in data['data']:
+                self.logger.info(f'      {object["title"]} {object["description"]}')
     
     def logout(self):
         self.authenticator.clean_session()
