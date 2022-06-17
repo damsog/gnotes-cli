@@ -75,7 +75,8 @@ def main() -> None:
         pass
 
     if args["command"] =="remove":
-        pass
+        requests_handler.remove( name=args["name"],
+                                 list=args["list"] )
 
     if args["command"] =="get":
         pass
