@@ -64,7 +64,12 @@ def main() -> None:
         pass
 
     if args["command"] =="add":
-        requests_handler.add( args["name"], args["list"], args["description"], args["filters"], args["attachments"], args["information"])
+        requests_handler.add( title=args["name"], 
+                              listName=args["list"], 
+                              description=args["description"], 
+                              filters=args["filters"], 
+                              attachments=args["attachments"], 
+                              information=args["information"] )
 
     if args["command"] =="update":
         pass

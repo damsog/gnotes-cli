@@ -136,7 +136,7 @@ class RequestHandler:
 
         payload = {}
         for arg,val in kwargs.items():
-            if( arg=='name' and val==None) or (arg=='list' and val==None): 
+            if( arg=='title' and val==None) or (arg=='listName' and val==None): 
                 self.logger.error(f'Must specify the {arg}')
                 return
             
@@ -154,13 +154,12 @@ class RequestHandler:
         # Handlng the response
         if request_result.text == "Invalid Token":
             self.authenticator.clean_session()
-            self.add(payload)
+            self.add(kwargs)
         else:
-            print(request_result.text)
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
                 self.logger.info("   Object Added:")
-                self.logger.info(f'      {request_result["data"]["name"]} {request_result["data"]["description"]}')
+                self.logger.info(f'      {request_result["data"]["title"]} {request_result["data"]["description"]}')
             else:
                 self.logger.error(f'   {request_result["message"]}')
             
