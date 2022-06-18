@@ -45,12 +45,12 @@ class RequestHandler:
             except Exception as e:
                 self.logger.error(e)
             
-    def create(self, name, description=None):
+    def create(self, list, description=None):
         if not self.authenticator.is_authenticated: 
             self.login()
             if not self.authenticator.is_authenticated: return
     
-        if not name: 
+        if not list: 
             self.logger.error(f'Must specify the list name')
             return
         
@@ -58,70 +58,77 @@ class RequestHandler:
         url = self.endpoints.api_list_create
         headers = {'content-type': 'application/json',
                     'Authorization': self.authenticator.session['token'] }        
-        payload = json.dumps({ 'name':name,'description': description})
+        payload = json.dumps({ 'name':list,'description': description})
 
         request_result = requests.request("POST", url=url, headers=headers, data=payload)
 
-
-        # Handlng the response
-        request_result = json.loads(request_result.text)
-
-        if request_result['result']=="success":
-            self.logger.info("   List Created:")
-            self.logger.info(f'      {request_result["data"]["newList"]["name"]} {request_result["data"]["newList"]["description"]}')
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.create(list, description)
         else:
-            self.logger.error(f'   {request_result["message"]}')
+            # Handlng the request
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                self.logger.info("   List Created:")
+                self.logger.info(f'      {request_result["data"]["newList"]["name"]} {request_result["data"]["newList"]["description"]}')
+            else:
+                self.logger.error(f'   {request_result["message"]}')
 
-    def modify(self, name, description=None):
+    def modify(self, list, description=None):
         if not self.authenticator.is_authenticated: 
             self.login()
             if not self.authenticator.is_authenticated: return
     
-        if not name: 
+        if not list: 
             self.logger.error(f'Must specify the list name')
             return
         
         # Preparing the request
-        url = self.endpoints.api_list_updateByName.replace(':name', name)
+        url = self.endpoints.api_list_updateByName.replace(':name', list)
         headers = {'content-type': 'application/json',
                     'Authorization': self.authenticator.session['token'] }        
-        payload = json.dumps({ 'name':name,'description': description})
+        payload = json.dumps({ 'name':list,'description': description})
 
         request_result = requests.request("PUT", url=url, headers=headers, data=payload)
 
-        # Handlng the request
-        request_result = json.loads(request_result.text)
-
-        if request_result['result']=="success":
-            self.logger.info("   List Updated:")
-            self.logger.info(f'      {request_result["data"]["name"]} {request_result["data"]["description"]}')
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.modify(list, description)
         else:
-            self.logger.error(f'   {request_result["message"]}')
+            # Handlng the request
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                self.logger.info("   List Updated:")
+                self.logger.info(f'      {request_result["data"]["name"]} {request_result["data"]["description"]}')
+            else:
+                self.logger.error(f'   {request_result["message"]}')
 
-    def delete(self, name):
+    def delete(self, list):
         if not self.authenticator.is_authenticated: 
             self.login()
             if not self.authenticator.is_authenticated: return
     
-        if not name: 
+        if not list: 
             self.logger.error(f'Must specify the list name')
             return
         
         # Preparing the request
-        url = self.endpoints.api_list_deleteByName.replace(':name', name)
+        url = self.endpoints.api_list_deleteByName.replace(':name', list)
         headers = {'content-type': 'application/json',
                     'Authorization': self.authenticator.session['token'] }        
 
         request_result = requests.request("DELETE", url=url, headers=headers)
-
-        # Handlng the request
-        request_result = json.loads(request_result.text)
-
-        if request_result['result']=="success":
-            self.logger.info("   List Deleted:")
-            self.logger.info(f'      {request_result["data"]}')
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.delete(list)
         else:
-            self.logger.error(f'   {request_result["message"]}')
+            # Handlng the request
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                self.logger.info("   List Deleted:")
+                self.logger.info(f'      {request_result["data"]}')
+            else:
+                self.logger.error(f'   {request_result["message"]}')
 
     def set(self):
         pass
@@ -225,21 +232,22 @@ class RequestHandler:
                 for object in data['data']:
                     self.logger.info(f'      {object["name"]} {object["description"]}')
 
-        # Preparing the request     
-        url = self.endpoints.api_object_getByListName.replace(':name', list)
+        if(list!="lists"):
+            # Preparing the request     
+            url = self.endpoints.api_object_getByListName.replace(':name', list)
 
-        headers = {'content-type': 'application/json',
-                    'Authorization': self.authenticator.session['token'] }
+            headers = {'content-type': 'application/json',
+                        'Authorization': self.authenticator.session['token'] }
 
-        request_result = requests.request("GET", url=url, headers=headers)
-        if request_result.text == "Invalid Token":
-            self.authenticator.clean_session()
-            self.get(list, name, filter)
-        else:
-            data = json.loads(request_result.text)
-            self.logger.info("   User Lists:")
-            for object in data['data']:
-                self.logger.info(f'      {object["title"]} {object["description"]}')
+            request_result = requests.request("GET", url=url, headers=headers)
+            if request_result.text == "Invalid Token":
+                self.authenticator.clean_session()
+                self.get(list, name, filter)
+            else:
+                data = json.loads(request_result.text)
+                self.logger.info(f'   User {list}:')
+                for object in data['data']:
+                    self.logger.info(f'      {object["title"]} {object["description"]}')
     
     def logout(self):
         self.authenticator.clean_session()

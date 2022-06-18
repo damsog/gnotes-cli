@@ -2,6 +2,7 @@ from core.RequestHandler import RequestHandler
 from libs.logger import Logger
 from getpass import getpass
 import argparse
+import click
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -49,15 +50,15 @@ def main() -> None:
     requests_handler = RequestHandler()
 
     if args["command"] =="create":
-        requests_handler.create( args["name"], 
-                                 args["description"])
+        requests_handler.create( list=args["list"], 
+                                 description=args["description"])
 
     if args["command"] =="modify":
-        requests_handler.modify( args["name"], 
-                                 args["description"])
+        requests_handler.modify( list=args["list"], 
+                                 description=args["description"])
 
     if args["command"] =="delete":
-        requests_handler.delete( args["name"] )
+        requests_handler.delete( list=args["list"] )
 
     if args["command"] =="set":
         pass
@@ -84,9 +85,9 @@ def main() -> None:
         pass
 
     if args['command'] == 'get':
-        requests_handler.get( args['list'], 
-                              args['name'], 
-                              args["filters"])
+        requests_handler.get( list=args['list'], 
+                              name=args['name'], 
+                              filter=args["filters"])
     
     if args['command'] == 'logout':
         requests_handler.logout()

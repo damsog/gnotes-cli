@@ -8,3 +8,5 @@ python3 -m pip install requests
 python3 -m pip install python-dotenv
 python3 -m pip install colorful
 python3 -m pip install configparser
+python3 -m pip install rich
+python3 -m pip install click
