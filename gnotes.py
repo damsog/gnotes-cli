@@ -1,96 +1,98 @@
+from pkg_resources import require
 from core.RequestHandler import RequestHandler
 from libs.logger import Logger
 from getpass import getpass
 import argparse
 import click
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=[
-        "create", 
-        "modify",
-        "delete",
-        "set",
-        "unset",
-        "add",
-        "update",
-        "remove",
-        "get",
-        "logout"], help="S.")
-    ap.add_argument("-n", "--name", required=False, help="Element name")
-    ap.add_argument("-d", "--description", required=False, help="Element description. This option Substitutes previous description.")
-    ap.add_argument("-l", "--list", required=False, help="List name.")
-    ap.add_argument("-f", "--filters", required=False, help="Sets filters. This option Substitutes previous filters. \
-                                                            Usage: <filter> or <filter>=><value> or <filter>=>[<value>,<value>,..] \
-                                                            chain multiple options using '|'  ")
-    ap.add_argument("-a", "--attachments", required=False, help="Sets Attachments to object. This option Substitutes previous attachments. \
-                                                            Usage: <attachment> or <attachment>=><value> or <attachment>=>[<value>,<value>,..] \
-                                                            chain multiple options using '|'  ")
-    ap.add_argument("-af", "--add-filters", required=False, help="Add filters. This option Substitutes previous filters. \
-                                                            Usage: <filter> or <filter>=><value> or <filter>=>[<value>,<value>,..] \
-                                                            chain multiple options using '|'  ")
-    ap.add_argument("-aa", "--add-attachments", required=False, help="Add Attachments to object. This option Substitutes previous attachments. \
-                                                            Usage: <attachment> or <attachment>=><value> or <attachment>=>[<value>,<value>,..] \
-                                                            chain multiple options using '|'  ")
-    ap.add_argument("-rf", "--remove-filters", required=False, help="Remove filters. This option Substitutes previous filters. \
-                                                            Usage: <filter> or <filter>=><value> or <filter>=>[<value>,<value>,..] \
-                                                            chain multiple options using '|'  ")
-    ap.add_argument("-ra", "--remove-attachments", required=False, help="Remove Attachments to object. This option Substitutes previous attachments. \
-                                                            Usage: <attachment> or <attachment>=><value> or <attachment>=>[<value>,<value>,..] \
-                                                            chain multiple options using '|'  ")
-    ap.add_argument("-i", "--information", required=False, help="Extra information about the object")
-    ap.add_argument("-v", "--verbose", action="store_true", help="Debug level for logger output")
-    args = vars(ap.parse_args())
+@click.group()
+@click.option('--debug/--no-debug', default=False)
+@click.pass_context
+def cli(ctx, debug):
+    ctx.ensure_object(dict)
 
-    if args['verbose']:
+    if debug:
         logger = Logger("DEBUG", COLORED=True)
     else:
         logger = Logger("INFO", COLORED=True)
-
     requests_handler = RequestHandler()
+    ctx.obj['request_handler'] = requests_handler
 
-    if args["command"] =="create":
-        requests_handler.create( list=args["list"], 
-                                 description=args["description"])
+@cli.command()
+@click.pass_context
+@click.option("-l", "--list")
+@click.option("-d", "--description")
+def create(ctx, list, description):
+    ctx.obj['request_handler'].create( list=list, 
+                                       description=description )
 
-    if args["command"] =="modify":
-        requests_handler.modify( list=args["list"], 
-                                 description=args["description"])
+@cli.command()
+@click.pass_context
+@click.option("-l", "--list")
+@click.option("-d", "--description")
+def modify(ctx, list, description):
+    ctx.obj['request_handler'].modify( list=list, 
+                                        description=description)
 
-    if args["command"] =="delete":
-        requests_handler.delete( list=args["list"] )
+@cli.command()
+@click.pass_context
+@click.option("-l", "--list")
+def delete(ctx, list):
+    ctx.obj['request_handler'].delete( list=list )
 
-    if args["command"] =="set":
-        pass
+@cli.command()
+@click.pass_context
+def set(ctx):
+    pass
 
-    if args["command"] =="unset":
-        pass
+@cli.command()
+@click.pass_context
+def unset(ctx):
+    pass
 
-    if args["command"] =="add":
-        requests_handler.add( title=args["name"], 
-                              listName=args["list"], 
-                              description=args["description"], 
-                              filters=args["filters"], 
-                              attachments=args["attachments"], 
-                              information=args["information"] )
+@cli.command()
+@click.pass_context
+@click.argument("title")
+@click.option("-l", "--list", required=True)
+@click.option("-d", "--description")
+@click.option("-f", "--filters")
+@click.option("-a", "--attachments")
+@click.option("-i", "--information")
+def add(ctx, title, list, description, filters, attachments, information):
+    ctx.obj['request_handler'].add( title=title, 
+                                    listName=list, 
+                                    description=description, 
+                                    filters=filters, 
+                                    attachments=attachments, 
+                                    information=information )
 
-    if args["command"] =="update":
-        pass
+@cli.command()
+@click.pass_context
+def update(ctx):
+    pass
 
-    if args["command"] =="remove":
-        requests_handler.remove( name=args["name"],
-                                 list=args["list"] )
+@cli.command()
+@click.pass_context
+@click.argument("title")
+@click.option("-l", "--list", required=True)
+def remove(ctx, title, list):
+    ctx.obj['request_handler'].remove( title=title,
+                                       list=list )
 
-    if args["command"] =="get":
-        pass
+@cli.command()
+@click.pass_context
+@click.option("-l", "--list")
+@click.option("-n", "--object-name")
+@click.option("-f", "--filter")
+def get(ctx, list, object_name, filter):
+    ctx.obj['request_handler'].get( list=list, 
+                                    name=object_name, 
+                                    filter=filter )
 
-    if args['command'] == 'get':
-        requests_handler.get( list=args['list'], 
-                              name=args['name'], 
-                              filter=args["filters"])
-    
-    if args['command'] == 'logout':
-        requests_handler.logout()
+@cli.command()
+@click.pass_context
+def logout(ctx):
+    ctx.obj['request_handler'].logout()
 
 if __name__ == "__main__":
-    main()
+    cli()

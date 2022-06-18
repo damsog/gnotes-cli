@@ -173,12 +173,12 @@ class RequestHandler:
     def update(self):
         pass
 
-    def remove(self, name, list):
+    def remove(self, title, list):
         if not self.authenticator.is_authenticated: 
             self.login()
             if not self.authenticator.is_authenticated: return
     
-        if not name: 
+        if not title: 
             self.logger.error(f'Must specify the name')
             return
         
@@ -187,7 +187,7 @@ class RequestHandler:
             return
         
         # Preparing the request
-        url = self.endpoints.api_object_deleteByName.replace(':objectName',name).replace(':listName', list)
+        url = self.endpoints.api_object_deleteByName.replace(':objectName',title).replace(':listName', list)
         headers = {'content-type': 'application/json',
                     'Authorization': self.authenticator.session['token'] }        
 
@@ -195,7 +195,7 @@ class RequestHandler:
         request_result = requests.request("DELETE", url=url, headers=headers)
         if request_result.text == "Invalid Token":
             self.authenticator.clean_session()
-            self.remove(name, list)
+            self.remove(title, list)
         else:
             # Handlng the request
             request_result = json.loads(request_result.text)
