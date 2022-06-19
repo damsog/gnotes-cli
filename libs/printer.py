@@ -21,11 +21,21 @@ def print_objects(objects):
     table.add_column("Filters", style="blue")
     table.add_column("Extra Information", style="blue")
     for object in objects:
+        attachments=""
+        for key,value in object["attachments"].items():
+            if key=="others" and len(value)<1: continue
+            attachments += f'| {key} : {value} '
+        
+        filters=""
+        for key,value in object["filters"].items():
+            if key=="others" and len(value)<1: continue
+            filters += f'| {key} : {value} '
+
         table.add_row( ':heavy_check_mark:',
                        f'{object["title"]}', 
                        f'{object["description"]}',
-                       f'{object["attachments"]}',
-                       f'{object["filters"]}',
+                       attachments,
+                       filters,
                        f'{object["information"]}' )
 
     
