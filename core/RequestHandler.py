@@ -203,7 +203,7 @@ class RequestHandler:
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
                 print("[bold magenta] OBJECT DELETED")
-                print_lists([request_result['data']])
+                print_lists(request_result['data'])
             else:
                 print(f'[bold red][X] [magenta]{request_result["message"]}')
 
