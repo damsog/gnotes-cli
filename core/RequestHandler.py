@@ -2,6 +2,8 @@ from core.API import APIServerEndpoints
 from libs.authenticator import Authenticator
 from libs.logger import Logger
 from getpass import getpass
+from rich import print
+from libs.printer import print_lists, print_objects
 import configparser
 import requests
 import json
@@ -32,7 +34,7 @@ class RequestHandler:
         tries_remaining = 3
         while(tries_remaining > 0):
             tries_remaining -= 1
-            self.logger.info("Login to the platform...")
+            print("[bold magenta]Login to the platform...")
             user = input("username: ")
             password = getpass("password: ")
             try:
@@ -40,10 +42,10 @@ class RequestHandler:
                 if result['result'] == 'success':
                     break
                 elif result['result'] == 'failed':
-                    self.logger.info(f'Login Failed : {result["message"]}')
+                    print(f'[bold magenta]Login Failed : {result["message"]}')
 
             except Exception as e:
-                self.logger.error(e)
+                print(f'[bold red][X] [magenta]{e}')
             
     def create(self, list, description=None):
         if not self.authenticator.is_authenticated: 
@@ -51,7 +53,7 @@ class RequestHandler:
             if not self.authenticator.is_authenticated: return
     
         if not list: 
-            self.logger.error(f'Must specify the list name')
+            print(f'[bold red][X] [magenta]Must specify the list name')
             return
         
         # Preparing the request
@@ -69,10 +71,10 @@ class RequestHandler:
             # Handlng the request
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
-                self.logger.info("   List Created:")
-                self.logger.info(f'      {request_result["data"]["newList"]["name"]} {request_result["data"]["newList"]["description"]}')
+                print("[bold magenta] LIST CREATED")
+                print_lists([request_result['data']['newList']])
             else:
-                self.logger.error(f'   {request_result["message"]}')
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
 
     def modify(self, list, description=None):
         if not self.authenticator.is_authenticated: 
@@ -80,7 +82,7 @@ class RequestHandler:
             if not self.authenticator.is_authenticated: return
     
         if not list: 
-            self.logger.error(f'Must specify the list name')
+            print(f'[bold red][X] [magenta]Must specify the list name')
             return
         
         # Preparing the request
@@ -98,10 +100,10 @@ class RequestHandler:
             # Handlng the request
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
-                self.logger.info("   List Updated:")
-                self.logger.info(f'      {request_result["data"]["name"]} {request_result["data"]["description"]}')
+                print("[bold magenta] OBJECT CREATED")
+                print_lists([request_result['data']])
             else:
-                self.logger.error(f'   {request_result["message"]}')
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
 
     def delete(self, list):
         if not self.authenticator.is_authenticated: 
@@ -109,7 +111,7 @@ class RequestHandler:
             if not self.authenticator.is_authenticated: return
     
         if not list: 
-            self.logger.error(f'Must specify the list name')
+            print(f'[bold red][X] [magenta]Must specify the list name')
             return
         
         # Preparing the request
@@ -125,10 +127,10 @@ class RequestHandler:
             # Handlng the request
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
-                self.logger.info("   List Deleted:")
-                self.logger.info(f'      {request_result["data"]}')
+                print("[bold magenta] LIST DELETED")
+                print(f'[bold magenta]      {request_result["data"]}')
             else:
-                self.logger.error(f'   {request_result["message"]}')
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
 
     def set(self):
         pass
@@ -144,7 +146,7 @@ class RequestHandler:
         payload = {}
         for arg,val in kwargs.items():
             if( arg=='title' and val==None) or (arg=='listName' and val==None): 
-                self.logger.error(f'Must specify the {arg}')
+                print(f'[bold red][X] [magenta]Must specify the {arg}')
                 return
             
             payload[arg]= val if val else ""
@@ -165,10 +167,10 @@ class RequestHandler:
         else:
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
-                self.logger.info("   Object Added:")
-                self.logger.info(f'      {request_result["data"]["title"]} {request_result["data"]["description"]}')
+                print("[bold magenta] OBJECT ADDED")
+                print_objects([request_result['data']])
             else:
-                self.logger.error(f'   {request_result["message"]}')
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
             
     def update(self):
         pass
@@ -179,11 +181,11 @@ class RequestHandler:
             if not self.authenticator.is_authenticated: return
     
         if not title: 
-            self.logger.error(f'Must specify the name')
+            print(f'[bold red][X] [magenta]Must specify the name')
             return
         
         if not list: 
-            self.logger.error(f'Must specify the list')
+            print(f'[bold red][X] [magenta]Must specify the list')
             return
         
         # Preparing the request
@@ -200,10 +202,10 @@ class RequestHandler:
             # Handlng the request
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
-                self.logger.info("   Object Deleted:")
-                self.logger.info(f'      {request_result["data"]}')
+                print("[bold magenta] OBJECT DELETED")
+                print_lists([request_result['data']])
             else:
-                self.logger.error(f'   {request_result["message"]}')
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
 
     def get(self, list, name=None, filter=None):
         if not self.authenticator.is_authenticated: 
@@ -211,11 +213,11 @@ class RequestHandler:
             if not self.authenticator.is_authenticated: return
     
         if not list: 
-            self.logger.error(f'Must specify the list')
+            print(f'[bold red][X] [magenta]Must specify the list')
             return
 
         if(list=="lists" and not name):
-            if(filter): self.logger.warning("Filters dont apply to the set of lists themselves. ignoring option")
+            if(filter): print(f'[bold red][X] [magenta] Filters dont apply to the set of lists themselves. ignoring option')
             
             url = self.endpoints.api_list_getByUserId.replace(':id', self.authenticator.session['user_id'])
 
@@ -228,9 +230,8 @@ class RequestHandler:
                 self.get(list, name, filter)
             else:
                 data = json.loads(request_result.text)
-                self.logger.info("   User Lists:")
-                for object in data['data']:
-                    self.logger.info(f'      {object["name"]} {object["description"]}')
+                print("[bold magenta] USER LISTS")
+                print_lists(data["data"])
 
         if(list!="lists"):
             # Preparing the request     
@@ -245,9 +246,8 @@ class RequestHandler:
                 self.get(list, name, filter)
             else:
                 data = json.loads(request_result.text)
-                self.logger.info(f'   User {list}:')
-                for object in data['data']:
-                    self.logger.info(f'      {object["title"]} {object["description"]}')
+                print(f'[bold magenta] {list.upper()}')
+                print_objects(data["data"])
     
     def logout(self):
         self.authenticator.clean_session()
