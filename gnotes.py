@@ -83,17 +83,25 @@ def add(ctx, title, list, description, filters, attachments, information):
 def update(ctx, title, list, description, filters, attachments, information, 
                                           add_filters, add_attachments, add_information,
                                           remove_filters, remove_attachments, remove_information ):
-    ctx.obj['request_handler'].update( title=title,
-                                       listName=list, 
-                                       description=description, 
-                                       filters=filters, 
-                                       attachments=attachments, 
-                                       information=information )
-    ctx.obj['request_handler'].update_add( title=title,
-                                           listName=list, 
-                                           filters=add_filters, 
-                                           attachments=add_attachments, 
-                                           information=add_information )
+    if(description or filters or attachments or information):
+        ctx.obj['request_handler'].update( title=title,
+                                        listName=list, 
+                                        description=description, 
+                                        filters=filters, 
+                                        attachments=attachments, 
+                                        information=information )
+    if(add_filters or add_attachments or add_information):
+        ctx.obj['request_handler'].update_add( title=title,
+                                            listName=list, 
+                                            filters=add_filters, 
+                                            attachments=add_attachments, 
+                                            information=add_information )
+    if(remove_filters or remove_attachments or remove_information):
+        ctx.obj['request_handler'].update_remove( title=title,
+                                                listName=list, 
+                                                filters=remove_filters, 
+                                                attachments=remove_attachments, 
+                                                information=remove_information )
 
 @cli.command()
 @click.pass_context

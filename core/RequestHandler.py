@@ -231,8 +231,43 @@ class RequestHandler:
         # Handlng the response
         if request_result.text == "Invalid Token":
             self.authenticator.clean_session()
-            self.update(kwargs)
+            self.update_add(kwargs)
         else:
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                print("[bold magenta] OBJECT UPDATED")
+                print_objects([request_result['data']])
+            else:
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
+
+    def update_remove(self, **kwargs ):
+        if not self.authenticator.is_authenticated: 
+            self.login()
+            if not self.authenticator.is_authenticated: return
+    
+        payload = {}
+        for arg,val in kwargs.items():
+            if( arg=='title' and val==None) or (arg=='listName' and val==None): 
+                print(f'[bold red][X] [magenta]Must specify the {arg}')
+                return
+            
+            if((arg!='title' or arg!='listName') and val): payload[arg]= val
+        
+        # Preparing the request
+        url = self.endpoints.api_object_removeOptionsByName.replace(':objectName', kwargs['title']).replace(':listName', kwargs['listName'])
+        headers = {'content-type': 'application/json',
+                    'Authorization': self.authenticator.session['token'] }
+
+        payload = json.dumps(payload)
+
+        request_result = requests.request("DELETE", url=url, headers=headers, data=payload)
+
+        # Handlng the response
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.update_remove(kwargs)
+        else:
+            if(not request_result.text): return
             request_result = json.loads(request_result.text)
             if request_result['result']=="success":
                 print("[bold magenta] OBJECT UPDATED")
