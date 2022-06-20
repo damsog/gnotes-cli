@@ -54,7 +54,7 @@ def unset(ctx):
 @cli.command()
 @click.pass_context
 @click.argument("title")
-@click.option("-l", "--list", required=True)
+@click.option("-l", "--list")
 @click.option("-d", "--description")
 @click.option("-f", "--filters")
 @click.option("-a", "--attachments")
@@ -113,7 +113,7 @@ def update(ctx, title, list, description, filters, attachments, information,
 @cli.command()
 @click.pass_context
 @click.argument("title")
-@click.option("-l", "--list", required=True)
+@click.option("-l", "--list")
 def remove(ctx, title, list):
     if not list and ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']!='None': 
         list = ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']
