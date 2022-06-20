@@ -1,0 +1,7 @@
+[DEFAULT]
+server = 181.129.1.122
+port = 2020
+
+[SESSION]
+active_list = None
+

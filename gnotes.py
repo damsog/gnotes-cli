@@ -41,14 +41,15 @@ def delete(ctx, list):
     ctx.obj['request_handler'].delete( list=list )
 
 @cli.command()
+@click.argument("list")
 @click.pass_context
-def set(ctx):
-    pass
+def set(ctx, list):
+    ctx.obj['request_handler'].set( list=list )
 
 @cli.command()
 @click.pass_context
 def unset(ctx):
-    pass
+    ctx.obj['request_handler'].unset()
 
 @cli.command()
 @click.pass_context

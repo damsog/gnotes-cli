@@ -133,11 +133,17 @@ class RequestHandler:
             else:
                 print(f'[bold red][X] [magenta]{request_result["message"]}')
 
-    def set(self):
-        pass
+    def set(self, list):
+        # TODO: Request to check if list exist
+        if(not list): return
+        self.config['SESSION']['ACTIVE_LIST']=list
+        with open('config/config.init', 'w') as configfile:
+            self.config.write(configfile)
 
     def unset(self):
-        pass
+        self.config['SESSION']['ACTIVE_LIST']='None'
+        with open('config/config.init', 'w') as configfile:
+            self.config.write(configfile)
     
     def add(self, **kwargs):
         if not self.authenticator.is_authenticated: 

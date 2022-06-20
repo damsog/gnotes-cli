@@ -1,3 +1,4 @@
 gnotes_venv/
 **/__pycache__/
 **.pickle
+**/config.ini
