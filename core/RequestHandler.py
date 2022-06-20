@@ -141,11 +141,13 @@ class RequestHandler:
         self.config['SESSION']['ACTIVE_LIST']=list
         with open('config/config.init', 'w') as configfile:
             self.config.write(configfile)
+        print(f'[bold magenta]LIST {list.upper()} SET')
 
     def unset(self):
         self.config['SESSION']['ACTIVE_LIST']='None'
         with open('config/config.init', 'w') as configfile:
             self.config.write(configfile)
+        print(f'[bold magenta]LIST UNSET')
     
     def add(self, **kwargs):
         if not self.authenticator.is_authenticated: 

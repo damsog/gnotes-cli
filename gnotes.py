@@ -1,8 +1,7 @@
 from pkg_resources import require
 from core.RequestHandler import RequestHandler
 from libs.logger import Logger
-from getpass import getpass
-import argparse
+from rich import print
 import click
 
 @click.group()
@@ -60,6 +59,9 @@ def unset(ctx):
 @click.option("-a", "--attachments")
 @click.option("-i", "--information")
 def add(ctx, title, list, description, filters, attachments, information):
+    if not list and ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']!='None': 
+        list = ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']
+        print(f'[bold][magenta](from set: {list})')
     ctx.obj['request_handler'].add( title=title, 
                                     listName=list, 
                                     description=description, 
@@ -84,6 +86,9 @@ def add(ctx, title, list, description, filters, attachments, information):
 def update(ctx, title, list, description, filters, attachments, information, 
                                           add_filters, add_attachments, add_information,
                                           remove_filters, remove_attachments, remove_information ):
+    if not list and ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']!='None': 
+        list = ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']
+        print(f'[bold][magenta](from set: {list})')
     if(description or filters or attachments or information):
         ctx.obj['request_handler'].update( title=title,
                                         listName=list, 
@@ -109,6 +114,9 @@ def update(ctx, title, list, description, filters, attachments, information,
 @click.argument("title")
 @click.option("-l", "--list", required=True)
 def remove(ctx, title, list):
+    if not list and ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']!='None': 
+        list = ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']
+        print(f'[bold][magenta]((from set: {list})')
     ctx.obj['request_handler'].remove( title=title,
                                        list=list )
 
@@ -118,6 +126,9 @@ def remove(ctx, title, list):
 @click.option("-n", "--object-name")
 @click.option("-f", "--filter")
 def get(ctx, list, object_name, filter):
+    if not list and ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']!='None': 
+        list = ctx.obj['request_handler'].config['SESSION']['ACTIVE_LIST']
+        print(f'[bold][magenta](from set: {list})')
     ctx.obj['request_handler'].get( list=list, 
                                     name=object_name, 
                                     filter=filter )
