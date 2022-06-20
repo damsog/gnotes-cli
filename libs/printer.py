@@ -16,9 +16,9 @@ def print_objects(objects):
     table = Table(box=box.SIMPLE, show_header=True, header_style='bold #2070b2')
     table.add_column("", justify="right", style="green", no_wrap=True)
     table.add_column("Title", justify="right", style="cyan", no_wrap=True)
-    table.add_column("Description", style="blue")
+    table.add_column("Description", style="green")
     table.add_column("Attachments", style="blue")
-    table.add_column("Filters", style="blue")
+    table.add_column("Filters", style="green")
     table.add_column("Extra Information", style="blue")
     for object in objects:
         attachments=""
