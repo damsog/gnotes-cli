@@ -171,9 +171,74 @@ class RequestHandler:
                 print_objects([request_result['data']])
             else:
                 print(f'[bold red][X] [magenta]{request_result["message"]}')
+  
+    def update(self, **kwargs ):
+        if not self.authenticator.is_authenticated: 
+            self.login()
+            if not self.authenticator.is_authenticated: return
+    
+        payload = {}
+        for arg,val in kwargs.items():
+            if( arg=='title' and val==None) or (arg=='listName' and val==None): 
+                print(f'[bold red][X] [magenta]Must specify the {arg}')
+                return
             
-    def update(self):
-        pass
+            if((arg!='title' or arg!='listName') and val): payload[arg]= val
+        
+        # Preparing the request
+        url = self.endpoints.api_object_updateByName.replace(':objectName', kwargs['title']).replace(':listName', kwargs['listName'])
+        headers = {'content-type': 'application/json',
+                    'Authorization': self.authenticator.session['token'] }
+
+        payload = json.dumps(payload)
+
+        request_result = requests.request("PUT", url=url, headers=headers, data=payload)
+
+        # Handlng the response
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.update(kwargs)
+        else:
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                print("[bold magenta] OBJECT UPDATED")
+                print_objects([request_result['data']])
+            else:
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
+        
+    def update_add(self, **kwargs ):
+        if not self.authenticator.is_authenticated: 
+            self.login()
+            if not self.authenticator.is_authenticated: return
+    
+        payload = {}
+        for arg,val in kwargs.items():
+            if( arg=='title' and val==None) or (arg=='listName' and val==None): 
+                print(f'[bold red][X] [magenta]Must specify the {arg}')
+                return
+            
+            if((arg!='title' or arg!='listName') and val): payload[arg]= val
+        
+        # Preparing the request
+        url = self.endpoints.api_object_updateOptionsByName.replace(':objectName', kwargs['title']).replace(':listName', kwargs['listName'])
+        headers = {'content-type': 'application/json',
+                    'Authorization': self.authenticator.session['token'] }
+
+        payload = json.dumps(payload)
+
+        request_result = requests.request("PUT", url=url, headers=headers, data=payload)
+
+        # Handlng the response
+        if request_result.text == "Invalid Token":
+            self.authenticator.clean_session()
+            self.update(kwargs)
+        else:
+            request_result = json.loads(request_result.text)
+            if request_result['result']=="success":
+                print("[bold magenta] OBJECT UPDATED")
+                print_objects([request_result['data']])
+            else:
+                print(f'[bold red][X] [magenta]{request_result["message"]}')
 
     def remove(self, title, list):
         if not self.authenticator.is_authenticated: 

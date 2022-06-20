@@ -68,8 +68,32 @@ def add(ctx, title, list, description, filters, attachments, information):
 
 @cli.command()
 @click.pass_context
-def update(ctx):
-    pass
+@click.argument("title")
+@click.option("-l", "--list", required=True)
+@click.option("-d", "--description")
+@click.option("-f", "--filters")
+@click.option("-a", "--attachments")
+@click.option("-i", "--information")
+@click.option("-af", "--add-filters")
+@click.option("-aa", "--add-attachments")
+@click.option("-ai", "--add-information")
+@click.option("-rf", "--remove-filters")
+@click.option("-ra", "--remove-attachments")
+@click.option("-ri", "--remove-information")
+def update(ctx, title, list, description, filters, attachments, information, 
+                                          add_filters, add_attachments, add_information,
+                                          remove_filters, remove_attachments, remove_information ):
+    ctx.obj['request_handler'].update( title=title,
+                                       listName=list, 
+                                       description=description, 
+                                       filters=filters, 
+                                       attachments=attachments, 
+                                       information=information )
+    ctx.obj['request_handler'].update_add( title=title,
+                                           listName=list, 
+                                           filters=add_filters, 
+                                           attachments=add_attachments, 
+                                           information=add_information )
 
 @cli.command()
 @click.pass_context
