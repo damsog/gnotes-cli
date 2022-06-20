@@ -11,23 +11,24 @@ import requests
 import json
 
 class RequestHandler:
-    def __init__(self, level="INFO") -> None:
+    def __init__(self, main_path, level="INFO") -> None:
         if level=="DEBUG":
             self.logger = Logger("DEBUG", COLORED=True)
         else:
             self.logger = Logger("INFO", COLORED=True)
 
         # Configuration
-        if not exists('config/config.init'): shutil.copyfile('config/config.init.BASE','config/config.init')
+        self.main_path=main_path
+        if not exists(f'{self.main_path}/config/config.init'): shutil.copyfile(f'{self.main_path}/config/config.init.BASE',f'{self.main_path}/config/config.init')
         self.config = configparser.ConfigParser()
-        self.config.read('config/config.init')
+        self.config.read(f'{self.main_path}/config/config.init')
 
         # API
         self.server_url = self.config['DEFAULT']['SERVER']
         self.server_port = self.config['DEFAULT']['PORT']
         self.endpoints = APIServerEndpoints(self.server_url, self.server_port)
 
-        self.authenticator = Authenticator(self.endpoints.api_login)
+        self.authenticator = Authenticator(self.endpoints.api_login, self.main_path)
 
         # List
         self.list_active = False
@@ -139,13 +140,13 @@ class RequestHandler:
         # TODO: Request to check if list exist
         if(not list): return
         self.config['SESSION']['ACTIVE_LIST']=list
-        with open('config/config.init', 'w') as configfile:
+        with open(f'{self.main_path}/config/config.init', 'w') as configfile:
             self.config.write(configfile)
         print(f'[bold magenta]LIST {list.upper()} SET')
 
     def unset(self):
         self.config['SESSION']['ACTIVE_LIST']='None'
-        with open('config/config.init', 'w') as configfile:
+        with open(f'{self.main_path}/config/config.init', 'w') as configfile:
             self.config.write(configfile)
         print(f'[bold magenta]LIST UNSET')
     

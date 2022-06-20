@@ -1,3 +1,4 @@
+import os
 from pkg_resources import require
 from core.RequestHandler import RequestHandler
 from libs.logger import Logger
@@ -14,7 +15,7 @@ def cli(ctx, debug):
         logger = Logger("DEBUG", COLORED=True)
     else:
         logger = Logger("INFO", COLORED=True)
-    requests_handler = RequestHandler()
+    requests_handler = RequestHandler(os.path.dirname(__file__))
     ctx.obj['request_handler'] = requests_handler
 
 @cli.command()

@@ -5,10 +5,11 @@ import pickle
 import json
 
 class Authenticator:
-    def __init__(self, url, username=None, password=None)-> None:
+    def __init__(self, url, main_path, username=None, password=None)-> None:
         self.url = url
         self.session = {'user_id':None,'token':None}
         self.is_authenticated = False
+        self.main_path = main_path
 
         if(username is not None and password is not None):
             credentials = { 'username': username, 'password': password }
@@ -26,11 +27,11 @@ class Authenticator:
             self.read_session()
     
     def read_session(self):
-        session_exists = exists('session.pickle')
+        session_exists = exists(f'{self.main_path}/session.pickle')
 
         if session_exists:
             try:
-                with open("session.pickle", "rb") as session_to_save:
+                with open(f'{self.main_path}/session.pickle', "rb") as session_to_save:
                     self.session = pickle.load(session_to_save)
                     self.is_authenticated = True
 
@@ -39,14 +40,14 @@ class Authenticator:
                 self.is_authenticated = False
 
     def save_session(self):
-        with open("session.pickle", "wb") as session_to_save:
+        with open(f'{self.main_path}/session.pickle', "wb") as session_to_save:
             pickle.dump(self.session, session_to_save)
     
     def clean_session(self):
         self.session = {'user_id':None,'token':None}
         self.is_authenticated = False
         try:
-            os.remove('session.pickle')
+            os.remove(f'{self.main_path}/session.pickle')
         except Exception as e:
             pass
         
