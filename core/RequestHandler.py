@@ -1,9 +1,10 @@
+from libs.printer import print_lists, print_objects
 from core.API import APIServerEndpoints
 from libs.authenticator import Authenticator
 from libs.logger import Logger
 from getpass import getpass
+from rich.prompt import Prompt
 from rich import print
-from libs.printer import print_lists, print_objects
 import configparser
 import requests
 import json
@@ -35,8 +36,8 @@ class RequestHandler:
         while(tries_remaining > 0):
             tries_remaining -= 1
             print("[bold magenta]Login to the platform...")
-            user = input("username: ")
-            password = getpass("password: ")
+            user = Prompt.ask("[bold magenta]username: ")
+            password = Prompt.ask("[bold magenta]password: ", password=True)
             try:
                 result = self.authenticator.authenticate(user, password)
                 if result['result'] == 'success':
