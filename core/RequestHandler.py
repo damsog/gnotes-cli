@@ -1,8 +1,9 @@
+import shutil
 from libs.printer import print_lists, print_objects
 from core.API import APIServerEndpoints
 from libs.authenticator import Authenticator
 from libs.logger import Logger
-from getpass import getpass
+from os.path import exists
 from rich.prompt import Prompt
 from rich import print
 import configparser
@@ -17,6 +18,7 @@ class RequestHandler:
             self.logger = Logger("INFO", COLORED=True)
 
         # Configuration
+        if not exists('config/config.init'): shutil.copyfile('config/config.init.BASE','config/config.init')
         self.config = configparser.ConfigParser()
         self.config.read('config/config.init')
 
