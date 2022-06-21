@@ -345,7 +345,7 @@ class RequestHandler:
                 print("[bold magenta] USER LISTS")
                 print_lists(data["data"])
 
-        if(list!="lists"):
+        if(list!="lists" and not name):
             # Preparing the request     
             url = self.endpoints.api_object_getByListName.replace(':name', list)
 
@@ -360,6 +360,23 @@ class RequestHandler:
                 data = json.loads(request_result.text)
                 print(f'[bold magenta] {list.upper()}')
                 print_objects(data["data"])
+        
+        if(name):
+            # Preparing the request     
+            url = self.endpoints.api_object_getByName.replace(':objectName',name).replace(':listName', list)
+
+            headers = {'content-type': 'application/json',
+                        'Authorization': self.authenticator.session['token'] }
+
+            request_result = requests.request("GET", url=url, headers=headers)
+            if request_result.text == "Invalid Token":
+                self.authenticator.clean_session()
+                self.get(list, name, filter)
+            else:
+                data = json.loads(request_result.text)
+                print(f'[bold magenta] {list.upper()}')
+                print_objects([data["data"]])
+
     
     def logout(self):
         self.authenticator.clean_session()
