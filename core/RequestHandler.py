@@ -341,9 +341,12 @@ class RequestHandler:
                 self.authenticator.clean_session()
                 self.get(list, name, filter)
             else:
-                data = json.loads(request_result.text)
-                print("[bold magenta] USER LISTS")
-                print_lists(data["data"])
+                request_result = json.loads(request_result.text)
+                if request_result['result']=="success":
+                    print("[bold magenta] USER LISTS")
+                    print_lists(request_result["data"])
+                else:
+                    print(f'[bold red][X] [magenta]{request_result["message"]}')
 
         if(list!="lists" and not name and not filter):
             # Preparing the request     
@@ -357,9 +360,12 @@ class RequestHandler:
                 self.authenticator.clean_session()
                 self.get(list, name, filter)
             else:
-                data = json.loads(request_result.text)
-                print(f'[bold magenta] {list.upper()}')
-                print_objects(data["data"])
+                request_result = json.loads(request_result.text)
+                if request_result['result']=="success":
+                    print(f'[bold magenta] {list.upper()}')
+                    print_objects(request_result["data"])
+                else:
+                    print(f'[bold red][X] [magenta]{request_result["message"]}')
         
         if(list!="lists" and not name and filter):
             # Preparing the request     
@@ -375,9 +381,12 @@ class RequestHandler:
                 self.authenticator.clean_session()
                 self.get(list, name, filter)
             else:
-                data = json.loads(request_result.text)
-                print(f'[bold magenta] {list.upper()}')
-                print_objects(data["data"])
+                request_result = json.loads(request_result.text)
+                if request_result['result']=="success":
+                    print(f'[bold magenta] {list.upper()}')
+                    print_objects(request_result["data"])
+                else:
+                    print(f'[bold red][X] [magenta]{request_result["message"]}')
         
         if(name):
             # Preparing the request     
@@ -391,9 +400,12 @@ class RequestHandler:
                 self.authenticator.clean_session()
                 self.get(list, name, filter)
             else:
-                data = json.loads(request_result.text)
-                print(f'[bold magenta] {list.upper()}')
-                print_objects([data["data"]])
+                request_result = json.loads(request_result.text)
+                if request_result['result']=="success":
+                    print(f'[bold magenta] {list.upper()}')
+                    print_objects([request_result["data"]])
+                else:
+                    print(f'[bold red][X] [magenta]{request_result["message"]}')
 
     
     def logout(self):
