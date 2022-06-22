@@ -345,7 +345,7 @@ class RequestHandler:
                 print("[bold magenta] USER LISTS")
                 print_lists(data["data"])
 
-        if(list!="lists" and not name):
+        if(list!="lists" and not name and not filter):
             # Preparing the request     
             url = self.endpoints.api_object_getByListName.replace(':name', list)
 
@@ -353,6 +353,24 @@ class RequestHandler:
                         'Authorization': self.authenticator.session['token'] }
 
             request_result = requests.request("GET", url=url, headers=headers)
+            if request_result.text == "Invalid Token":
+                self.authenticator.clean_session()
+                self.get(list, name, filter)
+            else:
+                data = json.loads(request_result.text)
+                print(f'[bold magenta] {list.upper()}')
+                print_objects(data["data"])
+        
+        if(list!="lists" and not name and filter):
+            # Preparing the request     
+            url = self.endpoints.api_object_getByFilters.replace(':listName', list)
+
+            headers = {'content-type': 'application/json',
+                        'Authorization': self.authenticator.session['token'] }
+
+            payload = json.dumps({ 'filters':filter })
+
+            request_result = requests.request("POST", url=url, headers=headers, data=payload)
             if request_result.text == "Invalid Token":
                 self.authenticator.clean_session()
                 self.get(list, name, filter)
