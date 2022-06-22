@@ -19,7 +19,6 @@ def print_objects(objects):
     table.add_column("Description", style="green")
     table.add_column("Attachments", style="blue")
     table.add_column("Filters", style="green")
-    table.add_column("Extra Information", style="blue")
     for object in objects:
         attachments=""
         for key,value in object["attachments"].items():
@@ -35,8 +34,33 @@ def print_objects(objects):
                        f'{object["title"]}', 
                        f'{object["description"]}',
                        attachments,
-                       filters,
-                       f'{object["information"]}' )
+                       filters )
+
+    
+    print(table)
+
+def print_details(object):
+    table = Table(box=box.SIMPLE, show_header=True, title="[bold][blue]DETAILED INFORMATION", header_style='bold #2070b2')
+    table.add_column("", justify="right", style="green")
+    table.add_column("", justify="left", style="cyan")
+    table.add_column("", style="green")
+
+    if isinstance(object,str):
+        table.add_row( ':heavy_check_mark:',
+                'Other', 
+                f'{object}' )
+
+    else:
+        for information,details in object.items():
+            if(information=='others'):
+                for extra_detail in details:
+                    table.add_row( ':heavy_check_mark:',
+                                'Other', 
+                                f'{extra_detail}' )
+            else:
+                table.add_row( ':heavy_check_mark:',
+                            f'{information}', 
+                            f'{details}' )
 
     
     print(table)

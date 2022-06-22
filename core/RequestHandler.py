@@ -1,5 +1,5 @@
 import shutil
-from libs.printer import print_lists, print_objects
+from libs.printer import print_lists, print_objects, print_details
 from core.API import APIServerEndpoints
 from libs.authenticator import Authenticator
 from libs.logger import Logger
@@ -404,6 +404,7 @@ class RequestHandler:
                 if request_result['result']=="success":
                     print(f'[bold magenta] {list.upper()}')
                     print_objects([request_result["data"]])
+                    print_details(request_result["data"]["information"])
                 else:
                     print(f'[bold red][X] [magenta]{request_result["message"]}')
 
