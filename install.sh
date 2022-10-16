@@ -10,3 +10,6 @@ python3 -m pip install colorful
 python3 -m pip install configparser
 python3 -m pip install rich
 python3 -m pip install click
+cp config/config.init.BASE config/config.init
+DIR=$(pwd)
+echo "alias gno=\"$DIR/gnotes_venv/bin/python3.7 $DIR/gnotes.py\"" >> ~/.bashrc
