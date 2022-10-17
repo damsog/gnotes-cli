@@ -9,7 +9,7 @@ This is a command line interface client to use the platform. tis client connects
 To install simply clone the repository, navigate to the folder and run the install script on linux.
 
 ```sh
-git clone https://github.com/damsog/gnotes-cl
+git clone https://github.com/damsog/gnotes-cli
 cd gnotes-cli
 /bin/bash install.sh
 ```
@@ -41,7 +41,7 @@ Commands:
 |set   	|*<list_name>*|   	|   	|   	|
 |unset  |   	|   |   	|   	|
 |add   	|*<title>*|   	|*-l, --list<br>-d, --description<br>-f, --filters<br>-a, --attachments<br>-i, --information*|   	|
-|update |*<title>*|   	|*-l, --list<br>-d, --description<br>-f, --filters<br>-a, --attachments<br>-i, --information<br>-af, --add-filters<br>-aa, --add-attachments<br>-ai", "--add-information<br>-rf, --remove-filters<br>-ra, --remove-attachments<br>-ri, --remove-information*   	|
+|update |*<title>*|   	|*-l, --list<br>-d, --description<br>-f, --filters<br>-a, --attachments<br>-i, --information<br>-af, --add-filters<br>-aa, --add-attachments<br>-ai, --add-information<br>-rf, --remove-filters<br>-ra, --remove-attachments<br>-ri, --remove-information*   	|
 |remove |*<title>*|   	|*-l, --list*  	|   	|
 |get   	|   	|   	|*-l, --list<br>-n, --object-name<br>-f, --filter*|   	|
 |logout |   	|   	|   	|   	|
